@@ -26,6 +26,8 @@ vector exteriorProduct(vector,vector);
 
 matrix matrixAddition(matrix,matrix);
 matrix matrixMultiplication(matrix,matrix);
+matrix matrixTranspose(matrix);
+matrix getIndentityMatrix(matrix);
 
 //matrix and vector discrete operations
 
@@ -33,6 +35,8 @@ matrix vectorsToMatrix(const vector*,int);
 vector* matrixToVectors(const matrix);
 matrix matrixHorizontallyConcating(matrix,matrix);
 matrix matrixVerticallyConcating(matrix,matrix);
+matrix matrixHorizontallySlice(matrix,int,int);
+matrix matrixVerticallySlice(matrix,int,int);
 
 //basic matrix and vector applications
 

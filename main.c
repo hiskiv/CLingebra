@@ -3,8 +3,7 @@
 
 int main(){
     matrix A,B;
-    readMatrix(&A),readMatrix(&B);
-
-    displayMatrix(matrixHorizontallyConcating(A,B));
+    readMatrix(&A);
+    displayMatrix(getInverseMatrix(A));
     return 0;
 }

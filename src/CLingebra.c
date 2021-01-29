@@ -56,6 +56,16 @@ double innerProduct(vector src,vector dst){
 //Calculate the exterior product of vectors src and dst
 vector exteriorProduct(vector src,vector dst){}
 
+//Scalar multiplication of integer k and vector src
+matrix matrixScalar(matrix src,double k){
+    for(int i=0;i<src.N;i++){
+        for(int j=0;j<src.M;j++){
+            src.element[i][j]*=k;
+        }
+    }
+    return src;
+}
+
 //Addition of two matrices: dst = dst + src
 matrix matrixAddition(matrix dst,matrix src){
     if(dst.N!=src.N||dst.M!=src.M){
@@ -72,7 +82,7 @@ matrix matrixAddition(matrix dst,matrix src){
 
 //Multiplication of two matrices: dst = dst * src
 matrix matrixMultiplication(matrix dst,matrix src){
-    if(dst.M!=src.M){
+    if(dst.M!=src.N){
         printf("Multiplication arguments mismatching!\n");
         return dst;
     }
@@ -91,14 +101,27 @@ matrix matrixMultiplication(matrix dst,matrix src){
 
 //Transpose the matrix src
 matrix matrixTranspose(matrix src){
+    matrix ret;
+    ret.N=src.M,ret.M=src.N;
     for(int i=0;i<src.N;i++){
-        for(int j=0;j<i;j++){
-            double t=src.element[i][j];
-            src.element[i][j]=src.element[j][i];
-            src.element[j][i]=t;
+        for(int j=0;j<src.M;j++){
+            ret.element[j][i]=src.element[i][j];
         }
     }
-    return src;
+    return ret;
+}
+
+//The identity matrix of dimension n
+matrix getIdentityMatrix(int n){
+    matrix ret;
+    ret.N=ret.M=n;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            if(i==j)ret.element[i][j]=1;
+            else ret.element[i][j]=0;
+        }
+    }
+    return ret;
 }
 
 //Turn a bunch of vectors into a matrix in row
@@ -169,6 +192,40 @@ matrix matrixVerticallyConcating(matrix src,matrix dst){
     for(int i=0;i<ret.M;i++){
         for(int j=src.N;j<ret.N;j++){
             ret.element[j][i]=dst.element[j-src.N][i];
+        }
+    }
+    return ret;
+}
+
+//Horizontally slice the matrix src
+//return part of src between row l and r
+matrix matrixHorizontallySlice(matrix src,int l,int r){
+    if(l>r||l<0||r>=src.M){
+        printf("Invalid inteval!\n");
+        return src;
+    }
+    matrix ret;
+    ret.N=src.N,ret.M=r-l+1;
+    for(int i=0;i<src.N;i++){
+        for(int j=l;j<=r;j++){
+            ret.element[i][j-l]=src.element[i][j];
+        }
+    }
+    return ret;
+}
+
+//Vertically slice the matrix src
+//return part of src between line l and r
+matrix matrixVerticallySlice(matrix src,int l,int r){
+    if(l>r||l<0||r>=src.N){
+        printf("Invalid inteval!\n");
+        return src;
+    }
+    matrix ret;
+    ret.M=src.M,ret.N=r-l+1;
+    for(int i=0;i<src.M;i++){
+        for(int j=l;j<=r;j++){
+            ret.element[j-l][r]=src.element[j][i];
         }
     }
     return ret;
@@ -245,14 +302,22 @@ int getRank(matrix src){
                 break;
             }
         }
-        if(flag)ret++;
+        if(!flag)ret++;
     }
     return ret;
 }
 
 //Get inverse of matrix src
 matrix getInverseMatrix(matrix src){
-
+    if((src.N!=src.M)||(src.N==src.M&&getRank(src)!=src.N)){
+        printf("The matrix is uninvertible!\n");
+        return src;
+    }
+    matrix En=getIdentityMatrix(src.N);
+    matrix temp=matrixHorizontallyConcating(src,En);
+    temp=gaussianElimination(temp,0);
+    matrix ret=matrixHorizontallySlice(temp,src.N,2*src.N-1);
+    return ret;
 }
 
 //output the vector src
