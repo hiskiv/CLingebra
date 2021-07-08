@@ -17,7 +17,7 @@ typedef struct _matrix{
 
 vector vectorInverse(vector);
 vector vectorAddition(vector,vector);
-vector vectorMinus(vector,vector);
+vector vectorSubtraction(vector,vector);
 vector vectorScalar(vector,double);
 double innerProduct(vector,vector);
 vector exteriorProduct(vector,vector);
@@ -41,8 +41,9 @@ matrix matrixVerticallySlice(matrix,int,int);
 //basic matrix and vector applications
 
 matrix gaussianElimination(matrix,int);
-int getRank(matrix);
 matrix getInverseMatrix(matrix);
+int getRank(matrix);
+double getDeterminant(matrix);
 
 //handy API for debug and visualizing
 

@@ -27,7 +27,7 @@ vector vectorAddition(vector dst,vector src){
 }
 
 //Minus two vectors: dst = dst - src
-vector vectorMinus(vector dst,vector src){
+vector vectorSubtraction(vector dst,vector src){
     vector t=vectorInverse(src);
     return vectorAddition(dst,t);
 }
@@ -140,7 +140,7 @@ matrix vectorsToMatrix(const vector *src,int num){
     return ret;
 }
 
-//Turn a matrix into a bunch of vectors by rows
+//Turn a matrix into a bunch of vectors in rows
 vector* matrixToVectors(const matrix src){
     vector* ret=(vector*)malloc(sizeof(vector)*src.M);
     for(int i=0;i<src.M;i++){
@@ -225,7 +225,7 @@ matrix matrixVerticallySlice(matrix src,int l,int r){
     ret.M=src.M,ret.N=r-l+1;
     for(int i=0;i<src.M;i++){
         for(int j=l;j<=r;j++){
-            ret.element[j-l][r]=src.element[j][i];
+            ret.element[j-l][i]=src.element[j][i];
         }
     }
     return ret;
@@ -233,7 +233,7 @@ matrix matrixVerticallySlice(matrix src,int l,int r){
 
 //Perform the gaussian elimination on the matrix src
 //Transform the matix src into an echelon matrix
-//aug: value can be only 0 or 1(1 means src is an augmented matrix;vise versa)
+//aug: value can be only 0 or 1(1 means src is an augmented matrix, else it's not)
 matrix gaussianElimination(matrix src,int aug){
     int mainVar[MAX_DIM];//maintain the corresponding line of each main variable
     memset(mainVar,-1,sizeof(mainVar));
@@ -290,6 +290,19 @@ matrix gaussianElimination(matrix src,int aug){
     return src;
 }
 
+//Get inverse of matrix src
+matrix getInverseMatrix(matrix src){
+    if((src.N!=src.M)||(src.N==src.M&&getRank(src)!=src.N)){
+        printf("The matrix is uninvertible!\n");
+        return src;
+    }
+    matrix En=getIdentityMatrix(src.N);
+    matrix temp=matrixHorizontallyConcating(src,En);
+    temp=gaussianElimination(temp,0);
+    matrix ret=matrixHorizontallySlice(temp,src.N,2*src.N-1);
+    return ret;
+}
+
 //Calculate the rank of a matrix or a bunch of vectors
 int getRank(matrix src){
     src=gaussianElimination(src,0);
@@ -307,17 +320,43 @@ int getRank(matrix src){
     return ret;
 }
 
-//Get inverse of matrix src
-matrix getInverseMatrix(matrix src){
-    if((src.N!=src.M)||(src.N==src.M&&getRank(src)!=src.N)){
-        printf("The matrix is uninvertible!\n");
-        return src;
+double getDeterminantAuxil(matrix src){
+    if(src.N == 2){
+        double res = src.element[0][0]*src.element[1][1] - src.element[0][1]*src.element[1][0];
+        return res;
     }
-    matrix En=getIdentityMatrix(src.N);
-    matrix temp=matrixHorizontallyConcating(src,En);
-    temp=gaussianElimination(temp,0);
-    matrix ret=matrixHorizontallySlice(temp,src.N,2*src.N-1);
-    return ret;
+
+    double res = 0;
+    for(int j=0;j<src.N;j++){
+        // calculating the cofactor of src on (0,j)
+        matrix temp1 = matrixVerticallySlice(src, 1, src.N-1); // delete the first row
+        matrix temp2;
+        if(j==0){
+            temp1 = matrixHorizontallySlice(temp1, 1, src.N-1);
+        }else if (j==src.N-1){
+            temp1 = matrixHorizontallySlice(temp1, 0, src.N-2);
+        }else{
+            temp2 = matrixHorizontallySlice(temp1, 0, j-1); // left side
+            temp1 = matrixHorizontallySlice(temp1, j+1, src.N-1); // right side
+            temp1 = matrixHorizontallyConcating(temp2, temp1);
+        }
+        res += pow(-1, j+2) * src.element[0][j] * getDeterminantAuxil(temp1);
+    }
+
+    return res;
+}
+//Calculate the determinant
+double getDeterminant(matrix src){
+    if(src.N != src.M){
+        printf("Not a N*N matrix, can't get determinant!\n");
+        return 0;
+    }
+    double res = getDeterminantAuxil(src);
+    return res;
+}
+
+double* getEigenvalues(matrix src){
+
 }
 
 //output the vector src

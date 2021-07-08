@@ -4,6 +4,6 @@
 int main(){
     matrix A,B;
     readMatrix(&A);
-    displayMatrix(getInverseMatrix(A));
+    printf("%lf\n", getDeterminant(A));
     return 0;
 }
