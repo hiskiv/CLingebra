@@ -4,6 +4,9 @@
 int main(){
     matrix A,B;
     readMatrix(&A);
-    printf("%lf\n", getDeterminant(A));
+    double *eigenvalues = restrictedGetEigenvalues(A);
+    for(int i=1;i<=eigenvalues[0];i++){
+        printf("%.8lf\n", eigenvalues[i]);
+    }
     return 0;
 }

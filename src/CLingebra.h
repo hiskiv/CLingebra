@@ -27,7 +27,7 @@ vector exteriorProduct(vector,vector);
 matrix matrixAddition(matrix,matrix);
 matrix matrixMultiplication(matrix,matrix);
 matrix matrixTranspose(matrix);
-matrix getIndentityMatrix(matrix);
+matrix getIdentityMatrix(int);
 
 //matrix and vector discrete operations
 
@@ -44,6 +44,7 @@ matrix gaussianElimination(matrix,int);
 matrix getInverseMatrix(matrix);
 int getRank(matrix);
 double getDeterminant(matrix);
+double* restrictedGetEigenvalues(matrix);
 
 //handy API for debug and visualizing
 

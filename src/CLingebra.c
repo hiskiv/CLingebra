@@ -355,8 +355,36 @@ double getDeterminant(matrix src){
     return res;
 }
 
-double* getEigenvalues(matrix src){
+//Calculate the real eigenvalues of a matrix
+//but can only find eigenvalues among interval [-15, 15]
+//the number of distinct eigenvalues is stored in the first position of the array eigenvalues
+double* restrictedGetEigenvalues(matrix src){
+    double *eigenValues = (double*)malloc(sizeof(double)*(src.N));
+    double temp[src.N*10];
+    int cnt = 0;
+    double eigen = -15;
+    const double eps = 1e-5;    //the accuracy of the so-obtained eigenvalues
+    while(fabs(eigen-15)>eps){
+        matrix eigenmatrix = getIdentityMatrix(src.N);
+        eigenmatrix = matrixScalar(eigenmatrix, -eigen);
+        eigenmatrix = matrixAddition(src, eigenmatrix);
+        if(fabs(getDeterminant(eigenmatrix))<eps*10){
+            temp[++cnt] = eigen;
+        }
+        eigen += eps;
+    }
 
+    int cc = 0;
+    eigenValues[++cc] = temp[1];
+    for(int i=2;i<=cnt;i++){
+        if(fabs(temp[i-1]-temp[i]) < 1.5*eps){
+            continue;
+        }else{
+            eigenValues[++cc] = temp[i];
+        }
+    }
+    eigenValues[0] = cc;
+    return eigenValues;
 }
 
 //output the vector src
